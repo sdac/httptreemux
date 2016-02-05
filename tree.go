@@ -79,12 +79,15 @@ func (n *node) addPath(path string, wildcards []string) *node {
 	}
 
 	c := path[0]
-	nextSlash := strings.Index(path, "/")
+	nextSlash := strings.IndexAny(path, "/,")
 	var thisToken string
 	var tokenEnd int
 
 	if c == '/' {
 		thisToken = "/"
+		tokenEnd = 1
+	} else if c == ',' {
+		thisToken = ","
 		tokenEnd = 1
 	} else if nextSlash == -1 {
 		thisToken = path
@@ -240,7 +243,7 @@ func (n *node) search(path string) (found *node, params []string) {
 	if n.wildcardChild != nil {
 		// Didn't find a static token, so check for a wildcard.
 		nextSlash := 0
-		for nextSlash < pathLen && path[nextSlash] != '/' {
+		for nextSlash < pathLen && (path[nextSlash] != '/' && path[nextSlash] != ',') {
 			nextSlash++
 		}
 
